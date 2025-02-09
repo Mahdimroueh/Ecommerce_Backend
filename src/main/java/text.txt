@@ -1,0 +1,94 @@
+//    @Override
+//    public ApiResponse addCategory(ProductCategoryDto req) {
+//        ApiResponse response = new ApiResponse();
+//        ProductCategory category = new ProductCategory();
+//        if(req.getParentCategoryId()!= null) {
+//            ProductCategory parentCategory = getProductCategoryById(req.getParentCategoryId());
+//            category.setParentCategory(parentCategory);
+//        }
+//        category.setDesc(req.getDesc());
+//        category.setImage(req.getImage());
+//        category.setName(req.getCategoryName());
+//
+//        if(req.getSizeCategoryId()!=null) {
+//            SizeCategory sizeCategory = sizeCategoryService.findById(req.getSizeCategoryId());
+//            category.setSizeCategory(sizeCategory);
+//        }
+//        productCategoryRepository.save(category);
+//
+//        return new ApiResponse("added successfully");
+
+//    }
+
+
+@Transactional
+@Override
+public ApiResponse addProduct(ProductDto req) throws Exception {
+    // Map basic product details
+    Product product = productMapper.toEntity(req);
+
+    // Set ProductCategory and Brand
+    ProductCategory category = productCategoryService.getProductCategoryById(req.getCategoryId());
+    product.setProductCategory(category);
+
+    Brand brand = brandService.getBrandById(req.getBrandId());
+    product.setBrand(brand);
+
+    // Process ColorVariations
+    List<ColorVariation> colorVariations = new ArrayList<>();
+    for (ColorVariationDto tempColorVariationDto : req.getColorVariations()) {
+        // Map ColorVariation
+        ColorVariation tempColorVariation = colorVariationMapper.toEntity(tempColorVariationDto);
+
+        // Handle Color lookup or creation
+        Color color = colorRepository.findColorByName(tempColorVariationDto.getColorName());
+        if (color == null) {
+            Color savedColor = new Color();
+            savedColor.setName(tempColorVariationDto.getColorName());
+            color = colorRepository.save(savedColor);
+        }
+        tempColorVariation.setColor(color);
+
+        // Set product reference
+        tempColorVariation.setProduct(product);
+
+        // Upload and set images
+        Set<String> imageUrls = new HashSet<>();
+        if(tempColorVariationDto.getImages().size() > 0) {
+            for (String base64Image : tempColorVariationDto.getImages()) {
+                String imageUrl = imgurService.uploadBase64Image(base64Image, product.getName(), product.getDesc());
+                imageUrls.add(imageUrl);
+            }
+        }
+        tempColorVariation.setImages(imageUrls);
+
+        // Process SizeVariations
+        List<SizeVariation> sizeVariations = new ArrayList<>();
+        for (SizeVariationDto tempSizeVariationDto : tempColorVariationDto.getSizeVariations()) {
+            // Map SizeVariation
+            SizeVariation currentSizeVariation = sizeVariationMapper.toEntity(tempSizeVariationDto);
+
+            // Fetch and set SizeOption
+            SizeOption sizeOption = sizeOptionService.getSizeOptionById(tempSizeVariationDto.getSizeOptionId());
+            currentSizeVariation.setSizeOption(sizeOption);
+
+            // Set parent ColorVariation
+            currentSizeVariation.setColorVariation(tempColorVariation);
+
+            // Add to list
+            sizeVariations.add(currentSizeVariation);
+        }
+        tempColorVariation.setSizeVariations(sizeVariations);
+
+        // Add to ColorVariations list
+        colorVariations.add(tempColorVariation);
+    }
+
+    // Set ColorVariations to product
+    product.setColorVariations(colorVariations);
+
+    // Save product
+    productRepository.save(product);
+
+    return new ApiResponse("Product added successfully");
+}
