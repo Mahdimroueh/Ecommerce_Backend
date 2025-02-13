@@ -3,7 +3,7 @@ package com.mroueh.controller;
 import com.mroueh.dto.WishListItemRequest;
 import com.mroueh.response.ApiResponse;
 import com.mroueh.response.CartItemResponse;
-import com.mroueh.response.WishListItemResponse;
+import com.mroueh.response.WishListResponse;
 import com.mroueh.service.WishListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class WishListItemController {
         return new ResponseEntity<>(wishListService.addItem(jwt , req), HttpStatus.CREATED);
     }
     @GetMapping("/wishlist")
-    public ResponseEntity<List<CartItemResponse>> getAllItem(@CookieValue("jwt") String jwt ){
+    public ResponseEntity<List<WishListResponse>> getAllItem(@CookieValue("jwt") String jwt ){
         return new ResponseEntity<>(wishListService.GetAllShoppingCartItems(jwt), HttpStatus.CREATED);
     }
 }

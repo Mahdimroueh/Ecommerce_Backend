@@ -4,10 +4,11 @@ import com.mroueh.dto.WishListItemRequest;
 import com.mroueh.entity.*;
 import com.mroueh.exception.BadRequestException;
 import com.mroueh.mapper.ShoppingCartItemMapper;
+import com.mroueh.mapper.WishListItemMapper;
 import com.mroueh.repository.WishListItemRepository;
 import com.mroueh.response.ApiResponse;
 import com.mroueh.response.CartItemResponse;
-import com.mroueh.response.WishListItemResponse;
+import com.mroueh.response.WishListResponse;
 import com.mroueh.service.ColorVariationService;
 import com.mroueh.service.SizeVariationService;
 import com.mroueh.service.UserService;
@@ -26,8 +27,7 @@ public class WishListServiceImpl implements WishListService {
     private final SizeVariationService sizeVariationService;
     private final JwtService jwtService;
     private final WishListItemRepository wishListItemRepository;
-//    private final ShoppingCartItem shoppingCartItem;
-    private final ShoppingCartItemMapper shoppingCartItemMapper;
+    private final WishListItemMapper wishListItemMapper ;
 
     @Override
     public ApiResponse addItem(String jwt , WishListItemRequest req) {
@@ -48,14 +48,18 @@ public class WishListServiceImpl implements WishListService {
         return new ApiResponse("Item added to wishlist successfully", true);
     }
     @Override
-    public  List<CartItemResponse> GetAllShoppingCartItems(String jwt) {
+    public  List<WishListResponse> GetAllShoppingCartItems(String jwt) {
         String username = jwtService.getUsername(jwt);
         List<WishListItem> wishListItems = userService.getUserByUsername(username).getWishListItems();
-        List<CartItemResponse> cartItemResponses =shoppingCartItemMapper.toDto(wishListItems);
+        List<WishListResponse> wishListResponseList = wishListItemMapper.toDtoList(wishListItems);
 
-        for (CartItemResponse temp : cartItemResponses) {
-            temp.setSizes(sizeVariationService.getAvailableSize(temp.getProductId()));
+        for (WishListResponse temp : wishListResponseList) {
+            if(temp.getSizeId() == null){
+                temp.setSizes(sizeVariationService.getAvailableSize(null , temp.getColorId()));
+            }else{
+                temp.setSizes(sizeVariationService.getAvailableSize(temp.getSizeId() , null));
+            }
         }
-         return shoppingCartItemMapper.toDto(wishListItems);
+         return wishListResponseList;
     }
 }

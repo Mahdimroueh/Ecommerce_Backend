@@ -13,6 +13,6 @@ public interface SizeVariationService {
 
     public SizeVariation getByID(Long id);
 
-    public List<AvailableSize> getAvailableSize(Long id);
+    public List<AvailableSize> getAvailableSize(Long sizeId , Long colorId);
 
 }

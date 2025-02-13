@@ -6,6 +6,8 @@ import com.mroueh.entity.SizeOption;
 import com.mroueh.entity.SizeVariation;
 import com.mroueh.exception.EntityNotFoundException;
 import com.mroueh.mapper.SizeVariationMapper;
+import com.mroueh.repository.ColorRepository;
+import com.mroueh.repository.ColorVariationRepository;
 import com.mroueh.repository.SizeVariationRepository;
 import com.mroueh.response.AvailableSize;
 import com.mroueh.service.SizeOptionService;
@@ -24,6 +26,8 @@ public class SizeVariationServiceImpl implements SizeVariationService {
     private final SizeVariationMapper sizeVariationMapper;
     private final SizeOptionService sizeOptionService;
     private final SizeVariationRepository sizeVariationRepository;
+    private final ColorRepository colorRepository;
+    private final ColorVariationRepository colorVariationRepository;
 
     @Override
     public List<SizeVariation> addProduct(List<SizeVariationDto> sizeVariationDtos , ColorVariation colorVariation) {
@@ -50,10 +54,17 @@ public class SizeVariationServiceImpl implements SizeVariationService {
     }
 
     @Override
-    public List<AvailableSize> getAvailableSize(Long id) {
+    public List<AvailableSize> getAvailableSize(Long sizeId , Long colorId) {
       List<AvailableSize> availableSizes = new ArrayList<>();
-      SizeVariation size = getByID(id);
-      ColorVariation color = size.getColorVariation();
+      SizeVariation size;
+      ColorVariation color = new ColorVariation();
+      if(sizeId != null){
+         size = getByID(sizeId);
+         color = size.getColorVariation();
+      }else if(colorId != null){
+          color = colorVariationRepository.getReferenceById(colorId);
+      }
+
         return color.getSizeVariations().stream()
                 .map(sizeVariation -> {
                     AvailableSize curSize = new AvailableSize();

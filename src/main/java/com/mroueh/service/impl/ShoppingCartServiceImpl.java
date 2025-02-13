@@ -126,6 +126,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return new ApiResponse("Successfully deleted", true);
     }
 
+
     @Override
     public ShoppingCartResponse GetAllShoppingCartItems(String jwt) {
         String username = jwtService.getUsername(jwt);
@@ -133,7 +134,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
         ShoppingCartResponse response = shoppingCartMapper.toDto(cart);
         for (CartItemResponse temp : response.getShoppingCartItems()) {
-            temp.setSizes(sizeVariationService.getAvailableSize(temp.getProductId()));
+            temp.setSizes(sizeVariationService.getAvailableSize(temp.getProductId() , null));
         }
 
         return response;
