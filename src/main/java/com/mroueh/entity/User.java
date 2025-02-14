@@ -46,7 +46,7 @@ public class User {
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
     private List<UserReview> review;
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , orphanRemoval = true)
     private List<WishListItem>  wishListItems;
 
 }

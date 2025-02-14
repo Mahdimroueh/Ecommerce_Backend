@@ -39,7 +39,7 @@ public class SizeVariation {
     @Column(name = "product_code")
     private String code;
 
-    @OneToMany(mappedBy = "sizeVariation" , cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sizeVariation" , fetch = FetchType.EAGER)
     private List<WishListItem> wishListItems = new ArrayList<>();
 
 }

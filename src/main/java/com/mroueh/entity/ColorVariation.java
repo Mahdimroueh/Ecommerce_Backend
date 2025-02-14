@@ -43,7 +43,7 @@ public class ColorVariation {
      @OneToMany(mappedBy = "colorVariation" , cascade = CascadeType.ALL , fetch = FetchType.EAGER)
      private List<SizeVariation> sizeVariations = new ArrayList<>();
 
-     @OneToMany(mappedBy = "colorVariation" , cascade = CascadeType.ALL , fetch = FetchType.EAGER)
+     @OneToMany(mappedBy = "colorVariation"  , fetch = FetchType.EAGER)
      private List<WishListItem> wishListItems = new ArrayList<>();
 
 }

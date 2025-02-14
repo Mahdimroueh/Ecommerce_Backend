@@ -12,4 +12,8 @@ public interface WishListService {
     ApiResponse addItem(String jwt , WishListItemRequest req);
 
     public List<WishListResponse> GetAllShoppingCartItems(String jwt);
+
+    public ApiResponse deleteItem(String jwt , Long sizeId , Long colorId);
+
+    public ApiResponse updateSize(String jwt , Long sizeId , Long newSizeId , boolean isSize);
 }

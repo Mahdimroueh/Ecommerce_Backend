@@ -7,12 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class WishListItem {
+public class WishListItem implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
